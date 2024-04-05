@@ -1,6 +1,6 @@
 // Sketchfab Viewer API: Start/Stop the viewer
 var version = "1.9.0";
-var uid = "cfd2dea53c7248489c018237768ef943";
+var uid = "9d34d1742b9a44b7bc362f8b57685f14";
 
 var urlParams = new URLSearchParams(window.location.search);
 var autoSpin = 0.0;
@@ -162,12 +162,12 @@ function generateTree() {
   var i;
 
   //what this do?
-  // for (i = 0; i < toggler.length; i++) {
-  //   toggler[i].addEventListener("click", function () {
-  //     this.parentElement.querySelector(".nested").classList.toggle("active");
-  //     this.classList.toggle("caret-down");
-  //   });
-  // }
+  for (i = 0; i < toggler.length; i++) {
+    toggler[i].addEventListener("click", function () {
+      this.parentElement.querySelector(".nested").classList.toggle("active");
+      this.classList.toggle("caret-down");
+    });
+  }
 }
 
 function unflatten(arr) {
