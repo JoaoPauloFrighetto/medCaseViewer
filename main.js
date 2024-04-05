@@ -1,6 +1,6 @@
 // Sketchfab Viewer API: Start/Stop the viewer
 var version = "1.9.0";
-var uid = "9d34d1742b9a44b7bc362f8b57685f14";
+var uid = "cfd2dea53c7248489c018237768ef943";
 
 var urlParams = new URLSearchParams(window.location.search);
 var autoSpin = 0.0;
@@ -70,7 +70,6 @@ var success = function (api) {
                 .getElementsByClassName("Hide");
               console.log(" Child Buttons: " + childButtons.length);
 
-              //faz o "hide" funcionar
               if (childButtons.length == 0) {
                 api.hide(this.value);
               }
@@ -107,25 +106,26 @@ var success = function (api) {
           }
         }
       });
-
-      document
-        .getElementById("screenshot")
-        .addEventListener("click", function () {
-          api.getScreenShot(800, 800, "image/png", function (err, result) {
-            if (!err) {
-              var anchor = document.createElement("a");
-              anchor.href = result;
-              anchor.download = "screenshot.png";
-              anchor.innerHTML =
-                '<img width="100" height="100" src=' + result + ">";
-              document.getElementById("navTree").appendChild(anchor);
+      /*  
+        document.getElementById('screenshot').addEventListener('click', function () {
+           api.getScreenShot(800, 800, 'image/png', function (err, result) {
+           if (!err) {
+             var anchor = document.createElement('a');
+             anchor.href = result;
+             anchor.download = 'screenshot.png';
+             anchor.innerHTML = '<img width="100" height="100" src=' + result + '>';
+             document.getElementById('navTree').appendChild(anchor);
             }
           });
         });
+        */
 
-      document.getElementById("show").addEventListener("click", function () {
-        api.show(id);
-      });
+      /*
+            document.getElementById('show').addEventListener('click', function () {
+                api.show(id);
+            });
+            
+            */
     });
   });
 };
@@ -149,7 +149,7 @@ function initGui() {
 //initGui();
 
 function generateTree() {
-  console.log("Total Node Count: " + officialNodes.length);
+  //console.log("Total Node Count: " + officialNodes.length);
 
   var tree = unflatten(officialNodes);
   //console.log(tree);
@@ -157,11 +157,10 @@ function generateTree() {
   //Create the HTML UL elemenet of the objects
   var navTree = document.getElementById("navTree");
   navTree.appendChild(to_ul(tree, "myUL"));
-  //tirar e desativar o caret
+
   var toggler = document.getElementsByClassName("caret");
   var i;
 
-  //what this do?
   for (i = 0; i < toggler.length; i++) {
     toggler[i].addEventListener("click", function () {
       this.parentElement.querySelector(".nested").classList.toggle("active");
@@ -230,9 +229,9 @@ function to_ul(branches, setID = "", setClass = "") {
 
       sp.appendChild(textNode);
 
-      // li.appendChild(sp);
-      //   li.appendChild(createButton("Hide/Show", branch.instanceID, branch.name));
-      //   li.appendChild(createButton("Show", branch.instanceID, branch.name));
+      li.appendChild(sp);
+      li.appendChild(createButton("Hide", branch.instanceID, branch.name));
+      li.appendChild(createButton("Show", branch.instanceID, branch.name));
     } else {
       var sp2 = document.createElement("span");
       sp2.className = "caret_child";
