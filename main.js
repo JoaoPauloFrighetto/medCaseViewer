@@ -203,7 +203,7 @@ function unflatten(arr) {
 **********************/
 function to_ul(branches, setID = "", setClass = "") {
   var outerul = document.createElement("ul");
-  var lengthOfName = 25;
+  var lengthOfName = 10;
 
   if (setID != "") {
     outerul.id = setID;
@@ -221,12 +221,15 @@ function to_ul(branches, setID = "", setClass = "") {
       text = text.substring(0, lengthOfName);
       text += "...";
     }
+    
     var textNode = document.createTextNode(text);
+    
 
     if (branch.isParent) {
       // var sp = document.createElement("span");
-      // sp.className = "caret";
+      // sp.className = "Structures";
       // sp.appendChild(textNode);
+      // sp.textContent = "Estruturas";
       // li.appendChild(sp);
       // li.appendChild(createButton("Hide", branch.instanceID, branch.name));
       // li.appendChild(createButton("Show", branch.instanceID, branch.name));
