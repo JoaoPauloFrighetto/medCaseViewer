@@ -12,7 +12,7 @@ button {
   border-radius: 4px;
   padding: 0 13px;
   font-family: "Open Sans", sans-serif;
-  font-weight: 600;
+  font-weight: 600; 
   text-align: center;
   text-shadow: none;
   text-transform: uppercase;
@@ -21,10 +21,8 @@ button {
   outline: none;
   transition: background 0.2s;
   color: white;
-  background-color: #0d6efd;
-  height: 25px;
-  font-size: 0.875rem;
 }
+
 
 button.disabled {
   cursor: default;
@@ -65,7 +63,7 @@ ul,
 #myUL {
   list-style-type: none;
 }
-
+ 
 /* Remove margins and padding from the parent ul */
 #myUL {
   margin: 0;
@@ -101,6 +99,7 @@ ul,
 .active {
   display: block;
 }
+
 
 #api-frame {
   width: 100%;
@@ -156,7 +155,7 @@ li {
   font-weight: 600;
   display: flow-root;
 }
-
+ 
 ul.nested.active {
   margin-top: 1.5rem;
   margin-bottom: 1rem;
@@ -178,6 +177,8 @@ ul.nested.active {
   border-top: 1px solid #e7e7e7;
   overflow: scroll;
 }
+
+
 
 .controls>* {
   margin-right: 15px;
@@ -207,7 +208,7 @@ span.caret_child {
   display: inline-flex;
   align-items: center;
 }
-
+ 
 button {
   display: inline-flex;
   justify-content: center;
@@ -239,7 +240,7 @@ button.disabled {
   background-color: #e7e7e7;
   transition: background-color 0.25s ease;
 }
-
+ 
 button.Hide:hover {
   opacity: 0.7;
   transition: 0.25s;
@@ -336,6 +337,8 @@ li {
 
 @media (min-width: 576px) {
   .container {
+
+    min-height: 100vh;
     max-width: 540px;
   }
 }
@@ -407,8 +410,11 @@ li {
 *::after {
   box-sizing: border-box;
 }
-
+ 
 html {
+  height: 100%;
+  margin: 0;
+  padding: 0;
   font-family: sans-serif;
   line-height: 1.15;
   -webkit-text-size-adjust: 100%;
@@ -1025,6 +1031,7 @@ pre code {
 
 @media (min-width: 576px) {
   .container {
+min-height: 100vh;
     max-width: 540px;
   }
 }
@@ -4480,6 +4487,12 @@ input[type="button"].btn-block {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+}
+
+@media (max-width: 576px) {
+  .container {
+    min-height: 100vh !important;
+  }
 }
 
 .custom-select:focus {
@@ -9132,6 +9145,8 @@ button.bg-dark:focus {
     margin: 0 !important;
   }
 
+
+
   .mt-sm-0,
   .my-sm-0 {
     margin-top: 0 !important;
@@ -11212,7 +11227,17 @@ a.text-dark:focus {
 
 html,
 body {
+
   height: 100%;
+  margin: 0;
+  padding: 0;
+
+
+
+
+
+
+
 }
 
 html {
