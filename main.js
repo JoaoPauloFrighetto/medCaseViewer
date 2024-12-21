@@ -224,14 +224,12 @@ function to_ul(branches, setID = "", setClass = "") {
     var textNode = document.createTextNode(text);
 
     if (branch.isParent) {
-      var sp = document.createElement("span");
-      sp.className = "caret";
-
-      sp.appendChild(textNode);
-
-      li.appendChild(sp);
-      li.appendChild(createButton("Hide", branch.instanceID, branch.name));
-      li.appendChild(createButton("Show", branch.instanceID, branch.name));
+      // var sp = document.createElement("span");
+      // sp.className = "caret";
+      // sp.appendChild(textNode);
+      // li.appendChild(sp);
+      // li.appendChild(createButton("Hide", branch.instanceID, branch.name));
+      // li.appendChild(createButton("Show", branch.instanceID, branch.name));
     } else {
       var sp2 = document.createElement("span");
       sp2.className = "caret_child";
