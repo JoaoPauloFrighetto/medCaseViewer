@@ -166,6 +166,12 @@ client.init(uid, {
   preload: 1,
   autospin: autoSpin,
   transparent: 1,
+  ui_infos: 0,        // Hide model info
+  ui_controls: 0,     // Hide bottom-right controls
+  ui_stop: 0,         // Hide pause button
+  ui_help: 0,         // Hide help icon
+  ui_fullscreen: 0,   // Hide fullscreen icon
+  ui_vr: 0            // Hide VR icon
 });
 //////////////////////////////////
 // GUI Code
