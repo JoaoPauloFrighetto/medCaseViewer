@@ -5,7 +5,14 @@
 
 .Title {
   padding-left: 16px;
-  font-size: 20px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  padding-top: 15px;
+}
+.Subtitle {
+  padding-left: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #333;
   padding-top: 15px;
@@ -129,7 +136,7 @@ ul#myUL {
   margin: 0;
   width: 100%;
   max-width: 600px;
-  height: 80vh;
+  height: auto;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -141,6 +148,7 @@ ul#myUL {
 .container {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
   min-height: 100vh !important;
 }
@@ -350,7 +358,7 @@ li {
 @media (min-width: 576px) {
   .container {
 
-
+    margin-bottom: 3px;
     margin-right: 40px;
     margin-left: 40px;
     /* max-width: 540px; */
@@ -359,7 +367,12 @@ li {
 
 @media (max-width: 576px) {
   .container {
+    /* height: 60vh; */
     min-height: 100vh !important;
+  }
+
+  .skfb-view {
+    height: 60vh;
   }
 }
 
@@ -1574,7 +1587,8 @@ pre code {
 
   .col-md-6 {
     flex: 0 0 50%;
-    max-width: 50%;
+    max-width: 40%;
+    height: auto;
   }
 
   .col-md-7 {
