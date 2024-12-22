@@ -162,7 +162,7 @@ li {
   padding: 1rem 1rem;
   border-style: inset;
   border-width: 0.5px;
-  border-color: #6c757d4f;
+  /* border-color: #6c757d4f; */
   font-size: 0.875rem;
   font-weight: 400;
   display: flow-root;
@@ -238,7 +238,7 @@ button {
   outline: none;
   transition: background 0.2s;
   color: white;
-  background-color: #0d6efd;
+  background-color: #00000033;
   height: 40px;
   width: 80px;
   font-size: 12px;
@@ -2145,7 +2145,7 @@ pre code {
 .table-primary td,
 .table-primary thead th,
 .table-primary tbody+tbody {
-  border-color: #8f8d8e;
+  /* border-color: #8f8d8e; */
 }
 
 .table-hover .table-primary:hover {
@@ -2267,6 +2267,11 @@ pre code {
   background-color: #e1aab2;
 }
 
+/* ...existing code... */
+* {
+  border-color: #00000000 !important;
+}
+/* ...existing code... */
 .table-light,
 .table-light>th,
 .table-light>td {
@@ -11234,12 +11239,12 @@ a.text-dark:focus {
   .table-dark td,
   .table-dark thead th,
   .table-dark tbody+tbody {
-    border-color: #dee2e6;
+    /* border-color: #dee2e6; */
   }
 
   .table .thead-dark th {
     color: inherit;
-    border-color: #dee2e6;
+    /* border-color: #dee2e6; */
   }
 }
 

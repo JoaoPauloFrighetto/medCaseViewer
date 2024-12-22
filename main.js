@@ -105,6 +105,36 @@ var success = function (api) {
             });
           }
         }
+      var toggleButtons = document.getElementsByClassName("Toggle");
+      for (let i = 0; i < toggleButtons.length; i++) {
+        toggleButtons[i].addEventListener("click", function () {
+          if (this.dataset.isHidden === "false") {
+            api.hide(this.value);
+            this.dataset.isHidden = "true";
+            this.innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
+            const childToggles = document
+              .getElementById(this.value)
+              .getElementsByClassName("Toggle");
+            for (let j = 0; j < childToggles.length; j++) {
+              api.hide(childToggles[j].value);
+              childToggles[j].dataset.isHidden = "true";
+              childToggles[j].innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
+            }
+          } else {
+            api.show(this.value);
+            this.dataset.isHidden = "false";
+            this.innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+            const childToggles = document
+              .getElementById(this.value)
+              .getElementsByClassName("Toggle");
+            for (let j = 0; j < childToggles.length; j++) {
+              api.show(childToggles[j].value);
+              childToggles[j].dataset.isHidden = "false";
+              childToggles[j].innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+            }
+          }
+        });
+      }
       });
       /*  
         document.getElementById('screenshot').addEventListener('click', function () {
@@ -238,8 +268,9 @@ function to_ul(branches, setID = "", setClass = "") {
       sp2.className = "caret_child";
       sp2.appendChild(textNode);
       li.appendChild(sp2);
-      li.appendChild(createButton("Hide", branch.instanceID, branch.name));
-      li.appendChild(createButton("Show", branch.instanceID, branch.name));
+      li.appendChild(createToggleButton("Toggle", branch.instanceID, branch.name));
+      // li.appendChild(createButton("Hide", branch.instanceID, branch.name));
+      // li.appendChild(createButton("Show", branch.instanceID, branch.name));
     }
 
     if (branch.children) {
@@ -253,20 +284,57 @@ function to_ul(branches, setID = "", setClass = "") {
   return outerul;
 }
 
-function createButton(btnType, instance, name) {
-  var btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = btnType;
+// function createButton(btnType, instance, name) {
+//   var btn = document.createElement("button");
+//   btn.type = "button";
+//   btn.className = btnType;
 
-  if (btnType == "Hide") {
-    btn.id = instance + "_" + name + "_" + btnType;
-    btn.style.backgroundColor = "green";
-  } else {
-    btn.id = instance + "_" + name;
-  }
+//   if (btnType == "Hide") {
+//     btn.id = instance + "_" + name + "_" + btnType;
+//     btn.style.backgroundColor = "green";
+//   } else {
+//     btn.id = instance + "_" + name;
+//   }
+//   btn.value = instance;
+//   var btnText = document.createTextNode(btnType);
+//   btn.appendChild(btnText);
+
+//   return btn;
+// }
+
+/*
+ * Creates a toggle button that hides/shows a Sketchfab node.
+ * @param {Object} api - The Sketchfab Viewer API instance.
+ * @param {Number} instance - The instanceID of the Sketchfab node.
+ * @param {String} name - The name of the Sketchfab node.
+ * @returns {HTMLButtonElement} A button element with toggle functionality.
+ */
+function createToggleButton(btnType, instance, name) {
+  const btn = document.createElement("button");
+  btn.className = btnType;
+  // Give each button a unique ID
+  btn.id = instance + "_" + name + "_toggle";
+
+  // Keep the instanceID in the value property so you can reference it
   btn.value = instance;
-  var btnText = document.createTextNode(btnType);
-  btn.appendChild(btnText);
+
+  // Start in the "visible" state (eye icon)
+  btn.dataset.isHidden = "false";
+  btn.innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+
+  btn.addEventListener("click", function () {
+    if (btn.dataset.isHidden === "false") {
+      // Hide the model
+      api.hide(btn.value);
+      btn.dataset.isHidden = "true";
+      btn.innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
+    } else {
+      // Show the model
+      api.show(btn.value);
+      btn.dataset.isHidden = "false";
+      btn.innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+    }
+  });
 
   return btn;
 }
