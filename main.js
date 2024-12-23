@@ -239,7 +239,7 @@ function unflatten(arr) {
 **********************/
 function to_ul(branches, setID = "", setClass = "") {
   var outerul = document.createElement("ul");
-  var lengthOfName = 10;
+  var lengthOfName = 14;
 
   if (setID != "") {
     outerul.id = setID;
@@ -256,8 +256,9 @@ function to_ul(branches, setID = "", setClass = "") {
     if (text.length > lengthOfName) {
       text = text.substring(0, lengthOfName);
       text += "...";
+      
     }
-    
+    text = text.substring(0, text.length - 2);
     var textNode = document.createTextNode(text);
     
 
