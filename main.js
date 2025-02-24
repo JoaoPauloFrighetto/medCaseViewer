@@ -159,18 +159,6 @@ function createOpacitySlider(opacity, materialIndex) {
   });
   return slider;
 }
-// btn.value = opacity.toString();
-// btn.addEventListener("input", function () {
-//   setOpacityForMaterial(materialIndex, parseFloat(this.value));
-// });
-// btn.className = "OpacityButton";
-
-// btn.id = "material_" + materialIndex + "_opacity_button";
-// btn.textContent = opacity * 100 + "% Opacity";
-// btn.addEventListener("click", function () {
-//   setOpacityForMaterial(materialIndex, opacity);
-// });
-// }
 
 // Set opacity for a specific material
 function setOpacityForMaterial(materialIndex, opacity) {
