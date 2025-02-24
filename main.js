@@ -1,7 +1,7 @@
 // main.js
 // Sketchfab Viewer API: Start/Stop the viewer
 var version = "1.12.0";
-var uid = "1b5886557a0e4d998ce7027cbc2dbfe4"; // Replace with your model's UID
+var uid = "cfa25b2074ec4de79dbce19bc21f9e8d"; // Replace with your model's UID
 var api;
 // Global arrays for materials and non-parent nodes
 var materials = [];
@@ -11,27 +11,17 @@ var nonParentNodes = [];
 var seenNodes = {};
 
 var urlParams = new URLSearchParams(window.location.search);
-var autoSpin = 0.0;
-
-if (urlParams.has("autospin")) {
-  autoSpin = urlParams.get("autospin");
-}
-if (urlParams.has("id")) {
-  uid = urlParams.get("id"); // Override UID from URL parameter if provided
-}
+var autoSpin = parseFloat(urlParams.get("autospin")) || 0.0;
+var uid = urlParams.get("id") || "1b5886557a0e4d998ce7027cbc2dbfe4";
 
 var iframe = document.getElementById("api-frame");
 var client = new window.Sketchfab(version, iframe);
-var treeText = "";
 
 var error = function () {
   console.error("Sketchfab API error");
 };
 
-var idxNodes = 0;
 var myNodesByNameFromMap = {};
-var officialNodes = [];
-var objectID = -1;
 
 var success = function (passedApi) {
   api = passedApi; // Assign the API instance to the global variable
@@ -75,12 +65,11 @@ var success = function (passedApi) {
             myNodesByNameFromMap["RootNode"] || myNodesByNameFromMap["root"];
           if (rootNodeTree) {
             // Recursively build the nonParentNodes array
-            recurse(rootNodeTree, rootNodeTree.children.length, 0);
+            recurse(rootNodeTree);
             console.log("nonParentNodes (with instanceIDs):");
-
             // Assign material indices based on node order
             nonParentNodes.forEach(function (node, index) {
-              node.materialIndex = index % materials.length; // Simple mapping
+              node.materialIndex = index % materials.length;
             });
             generateFlatList();
           }
@@ -93,17 +82,6 @@ var success = function (passedApi) {
               api.hide(this.value);
               this.dataset.isHidden = "true";
               this.innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
-              const parentEl = document.getElementById(this.value);
-              if (parentEl) {
-                const childToggles = parentEl.getElementsByClassName("Toggle");
-                for (let j = 0; j < childToggles.length; j++) {
-                  api.hide(childToggles[j].value);
-                  childToggles[j].dataset.isHidden = "true";
-                  childToggles[
-                    j
-                  ].innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
-                }
-              }
             } else {
               api.show(this.value);
               this.dataset.isHidden = "false";
@@ -156,28 +134,54 @@ function generateFlatList() {
     span.textContent = node.name;
     li.appendChild(span);
     li.appendChild(createToggleButton("Toggle", node.instanceID, node.name));
-    li.appendChild(createOpacityButton(0.5, node.materialIndex - 1));
+    li.appendChild(createOpacitySlider(1.0, node.materialIndex));
     navTree.appendChild(li);
   });
 }
 
 // Create an opacity button for a material
-function createOpacityButton(opacity, materialIndex) {
-  const btn = document.createElement("button");
-  btn.className = "OpacityButton";
-  btn.id = "material_" + materialIndex + "_opacity_button";
-  btn.textContent = opacity * 100 + "% Opacity";
-  btn.addEventListener("click", function () {
-    setOpacityForMaterial(materialIndex, opacity);
+// function createOpacityButton(opacity, materialIndex) {
+//   const btn = document.createElement("button");
+//   btn.className = "OpacityButton";
+//   btn.id = "material_" + materialIndex + "_opacity_button";
+//   btn.textContent = opacity * 100 + "% Opacity";
+//   btn.addEventListener("click", function () {
+//     setOpacityForMaterial(materialIndex, opacity);
+//   });
+//   return btn;
+// }
+
+function createOpacitySlider(opacity, materialIndex) {
+  // function createOpacitySlider(opacity, materialIndex) {
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = "0";
+  slider.max = "1";
+  slider.step = "0.01";
+  slider.value = opacity.toString();
+  slider.addEventListener("input", function () {
+    setOpacityForMaterial(materialIndex, parseFloat(this.value));
   });
-  return btn;
+  return slider;
 }
+// btn.value = opacity.toString();
+// btn.addEventListener("input", function () {
+//   setOpacityForMaterial(materialIndex, parseFloat(this.value));
+// });
+// btn.className = "OpacityButton";
+
+// btn.id = "material_" + materialIndex + "_opacity_button";
+// btn.textContent = opacity * 100 + "% Opacity";
+// btn.addEventListener("click", function () {
+//   setOpacityForMaterial(materialIndex, opacity);
+// });
+// }
 
 // Set opacity for a specific material
 function setOpacityForMaterial(materialIndex, opacity) {
   var targetMaterial = materials.find(function (mat) {
     //someday fix it
-    return mat.stateSetID === materialIndex + 2;
+    return mat.stateSetID === materialIndex + 1;
   });
   if (!targetMaterial) {
     console.error(
@@ -210,42 +214,18 @@ function createToggleButton(btnType, instance, name) {
 }
 
 // Recursively traverse the node tree to identify non-parent nodes
-function recurse(nodeTree, childCount, theParentID) {
-  if (nodeTree) {
-    for (var i = 0; i < childCount; i++) {
+function recurse(nodeTree) {
+  nodeTree.children.forEach((child) => {
+    if (child.type === "MatrixTransform") {
+      recurse(child);
+    } else if (!seenNodes[child.instanceID]) {
       var node = {
-        name: nodeTree.children[i].name,
-        type: nodeTree.children[i].type,
-        instanceID: nodeTree.children[i].instanceID,
-        isParent: false,
-        parentID: theParentID,
+        name: child.name,
+        instanceID: child.instanceID,
+        materialIndex: -1, // Initial value, updated later
       };
-      if (node.type === "MatrixTransform") {
-        node.isParent = isParent(nodeTree.children[i].children);
-        recurse(
-          nodeTree.children[i],
-          nodeTree.children[i].children.length,
-          nodeTree.children[i].instanceID
-        );
-      } else if (!seenNodes[node.instanceID]) {
-        node.materialIndex = -1; // Initial value, updated later
-        nonParentNodes.push(node);
-        seenNodes[node.instanceID] = true;
-      }
+      nonParentNodes.push(node);
+      seenNodes[child.instanceID] = true;
     }
-  }
-}
-
-// Check if a node is a parent (has MatrixTransform children)
-function isParent(children) {
-  for (var i = 0; i < children.length; i++) {
-    if (children[i].type === "MatrixTransform") {
-      console.log(
-        "PARENT NODE DETECTED for child InstanceID:",
-        children[i].instanceID
-      );
-      return true;
-    }
-  }
-  return false;
+  });
 }
