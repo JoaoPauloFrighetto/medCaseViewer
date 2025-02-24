@@ -1,7 +1,6 @@
 // main.js
 // Sketchfab Viewer API: Start/Stop the viewer
 var version = "1.12.0";
-var uid = "cfa25b2074ec4de79dbce19bc21f9e8d"; // Replace with your model's UID
 var api;
 // Global arrays for materials and non-parent nodes
 var materials = [];
@@ -12,7 +11,7 @@ var seenNodes = {};
 
 var urlParams = new URLSearchParams(window.location.search);
 var autoSpin = parseFloat(urlParams.get("autospin")) || 0.0;
-var uid = urlParams.get("id") || "1b5886557a0e4d998ce7027cbc2dbfe4";
+var uid = urlParams.get("id") || "cfa25b2074ec4de79dbce19bc21f9e8d";
 
 var iframe = document.getElementById("api-frame");
 var client = new window.Sketchfab(version, iframe);
@@ -129,31 +128,27 @@ function generateFlatList() {
   navTree.innerHTML = ""; // Clear existing content
   nonParentNodes.forEach(function (node) {
     var li = document.createElement("li");
+    li.className = "lineMain";
+    var line1 = document.createElement("div");
+    var line2 = document.createElement("div");
+    line2.className = "line2";
+    li.appendChild(line1);
+    li.appendChild(line2);
+
     var span = document.createElement("span");
     span.className = "caret_child";
     span.textContent = node.name;
-    li.appendChild(span);
-    li.appendChild(createToggleButton("Toggle", node.instanceID, node.name));
-    li.appendChild(createOpacitySlider(1.0, node.materialIndex));
+    line1.appendChild(span);
+    line1.appendChild(createToggleButton("Toggle", node.instanceID, node.name));
+    line2.appendChild(createOpacitySlider(1.0, node.materialIndex));
     navTree.appendChild(li);
   });
 }
 
-// Create an opacity button for a material
-// function createOpacityButton(opacity, materialIndex) {
-//   const btn = document.createElement("button");
-//   btn.className = "OpacityButton";
-//   btn.id = "material_" + materialIndex + "_opacity_button";
-//   btn.textContent = opacity * 100 + "% Opacity";
-//   btn.addEventListener("click", function () {
-//     setOpacityForMaterial(materialIndex, opacity);
-//   });
-//   return btn;
-// }
-
 function createOpacitySlider(opacity, materialIndex) {
   // function createOpacitySlider(opacity, materialIndex) {
   const slider = document.createElement("input");
+  slider.className = "opacitySlider";
   slider.type = "range";
   slider.min = "0";
   slider.max = "1";
