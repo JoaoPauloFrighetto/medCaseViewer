@@ -164,7 +164,7 @@ if (!textoEl) {
   textoEl.style.border = "1px solid #ccc";
   textoEl.style.borderRadius = "5px"; // Bordas arredondadas
   document.body.appendChild(textoEl);
-  textoEl.innerHTML = "clique para registrar o primeiro ponto de medida.";
+  textoEl.innerHTML = "clique para registrar o primeiro ponto de medida. Ao medir não mexa na camera para criar uma linha entre os pontos";
 }
 
 // Verifica se o SVG e a linha já existem, se não, cria e adiciona ao body
@@ -175,62 +175,63 @@ if (!svgEl) {
     svgEl.setAttribute("width", window.innerWidth);
     svgEl.setAttribute("height", window.innerHeight);
     svgEl.style.position = "fixed";
-    svgEl.style.top = "100";
-    svgEl.style.left = "0";
+    svgEl.style.top = "085";
+    svgEl.style.left = "020";
     svgEl.style.pointerEvents = "none";
     svgEl.style.zIndex = "1000";
     document.body.appendChild(svgEl);
 }
 
 api.addEventListener('click', function(info) {
-    if (info.position3D) {
-        var x = parseFloat(info.position3D[0].toFixed(3));
-        var y = parseFloat(info.position3D[1].toFixed(3));
-        var z = parseFloat(info.position3D[2].toFixed(3));
+  if (info.position3D) {
+      var x = parseFloat(info.position3D[0].toFixed(3));
+      var y = parseFloat(info.position3D[1].toFixed(3));
+      var z = parseFloat(info.position3D[2].toFixed(3));
 
-        var lineEl = document.getElementById("line");
-if (!lineEl) {
-    lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
-    lineEl.id = "line";
-    lineEl.setAttribute("stroke", "red"); // Cor vermelha
-    lineEl.setAttribute("stroke-width", "2"); // Espessura da linha
-    lineEl.style.top = "175";
-    lineEl.style.left = "000";
-    svgEl.appendChild(lineEl);
-}
+      var startX = parseFloat(info.position2D[0].toFixed(3));
+      var startY = parseFloat(info.position2D[1].toFixed(3));
 
-        if (oldX === null && oldY === null && oldZ === null) {
-            textoEl.innerHTML = "Primeiro clique registrado! Selecione outro ponto.";
-            oldX = x;
-            oldY = y;
-            oldZ = z;
-        } else {
-            // Calcula a distância entre os dois pontos
-            var deltaX = x - oldX;
-            var deltaY = y - oldY;
-            var deltaZ = z - oldZ;
-            var distancia = (Math.sqrt(deltaX ** 2 + deltaY ** 2 + deltaZ ** 2)).toFixed(3);
+      var lineEl = document.getElementById("line");
+      if (!lineEl) {
+          lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          lineEl.id = "line";
+          lineEl.setAttribute("stroke", "red");
+          lineEl.setAttribute("stroke-width", "2");
+          svgEl.appendChild(lineEl);
+      }
 
-            textoEl.innerHTML = "Distância calculada: " + distancia + " milímetros";
+      if (oldX === null && oldY === null && oldZ === null) {
+          textoEl.innerHTML = "Primeiro clique registrado! Selecione outro ponto. Lembre de não mexer a câmera.";
+          oldX = startX;
+          oldY = startY;
+          endX = x;
+          endY = y;
+          endZ = z;
+      } else {
+          // Calcula a distância entre os dois pontos
+          var deltaX = x - endX;
+          var deltaY = y - endY;
+          var deltaZ = z - endZ;
+          var distancia = (Math.sqrt(deltaX ** 2 + deltaY ** 2 + deltaZ ** 2)).toFixed(3);
 
-           // Converte as coordenadas 3D para a área 2D do SVG
-           var scaleFactor = 10;
-           var startX = (oldX * scaleFactor + window.innerWidth) / 2;
-           var startY = (-oldZ * scaleFactor + window.innerHeight) / 2;
-           var endX = (x * scaleFactor + window.innerWidth) / 2;
-           var endY = (-z * scaleFactor + window.innerHeight) / 2;
+          textoEl.innerHTML = "Distância calculada: " + distancia + " milímetros";
 
-            // Atualiza a linha SVG para conectar os pontos
-            lineEl.setAttribute("x1", startX);
-            lineEl.setAttribute("y1", startY);
-            lineEl.setAttribute("x2", endX);
-            lineEl.setAttribute("y2", endY);
-            lineEl.setAttribute("visibility", "visible");
-        }
+          // Atualiza a linha SVG para conectar os pontos
+          lineEl.setAttribute("x1", oldX);
+          lineEl.setAttribute("y1", oldY);
+          lineEl.setAttribute("x2", startX);
+          lineEl.setAttribute("y2", startY);
+          lineEl.setAttribute("visibility", "visible");
 
-        console.log("Clique em: X=" + x + ", Y=" + y + ", Z=" + z);
-    }
+          // Reseta para novo clique
+          oldX = null;
+          oldY = null;
+      }
+
+      console.log("Clique em: X=" + x + ", Y=" + y + ", Z=" + z);
+  }
 }, { pick: 'fast' });
+
     });
     
   });
@@ -380,6 +381,9 @@ function recurse(nodeTree) {
       nonParentNodes.push(node);
       seenNodes[child.instanceID] = true;
     }
+  });
+}
+
   });
 }
 
