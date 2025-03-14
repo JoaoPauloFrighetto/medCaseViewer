@@ -11,7 +11,7 @@ var seenNodes = {};
 
 var urlParams = new URLSearchParams(window.location.search);
 var autoSpin = parseFloat(urlParams.get("autospin")) || 0.0;
-var uid = urlParams.get("id") || "cfa25b2074ec4de79dbce19bc21f9e8d";
+var uid = urlParams.get("id") || "1b5886557a0e4d998ce7027cbc2dbfe4";
 
 var iframe = document.getElementById("api-frame");
 var client = new window.Sketchfab(version, iframe);
@@ -100,7 +100,139 @@ var success = function (passedApi) {
           });
         }
       });
+      var oldX = null, oldY = null, oldZ = null;
+
+
+// Cria o botão de reset apenas uma vez
+function createResetButton(btnType) {
+    if (document.getElementById("resetCoords")) return; // Evita criar múltiplos botões
+
+    const reset = document.createElement("button"); 
+    reset.className = btnType;
+    reset.id = "resetCoords";
+    reset.textContent = "Reset"; 
+
+    reset.style.position = "fixed"; 
+    reset.style.bottom = "20px";
+    reset.style.left = "20px";
+    reset.style.padding = "10px 20px";
+    reset.style.backgroundColor = "white";
+    reset.style.color = "black";
+    reset.style.border = "none";
+    reset.style.cursor = "pointer";
+    reset.style.zIndex = "1000"; 
+    document.body.appendChild(reset); 
+}
+
+document.getElementById("resetCoords").addEventListener("click", function () {
+  oldX = null;
+  oldY = null;
+  oldZ = null;
+
+  // Remove a linha do SVG se existir
+  var lineEl = document.getElementById("line");
+  if (lineEl) {
+      lineEl.remove();
+  }
+
+  // Limpa o texto
+  var textoEl = document.getElementById("texto");
+  if (textoEl) {
+      textoEl.innerHTML = "Clique para selecionar o primeiro ponto.";
+  }
+
+  console.log("Coordenadas resetadas!");
+});
+
+// Cria o botão de reset ao carregar a página
+document.addEventListener("DOMContentLoaded", function () {
+    createResetButton("meu-botao");
+});
+// Verifica se o elemento de texto existe, se não, cria e adiciona ao body
+var textoEl = document.getElementById("texto");
+if (!textoEl) {
+  textoEl = document.createElement("p");
+  textoEl.id = "texto";
+  textoEl.style.position = "absolute";
+  textoEl.style.top = "15px";
+  textoEl.style.left = "300px";
+  textoEl.style.color = "#fff"; // Texto mais claro
+  textoEl.style.fontSize = "20px";
+  textoEl.style.fontFamily = "Arial, sans-serif, bold";
+  textoEl.style.backgroundColor = "#272425"; // Fundo semi-transparente
+  textoEl.style.padding = "8px";
+  textoEl.style.border = "1px solid #ccc";
+  textoEl.style.borderRadius = "5px"; // Bordas arredondadas
+  document.body.appendChild(textoEl);
+  textoEl.innerHTML = "clique para registrar o primeiro ponto de medida.";
+}
+
+// Verifica se o SVG e a linha já existem, se não, cria e adiciona ao body
+var svgEl = document.getElementById("svgCanvas");
+if (!svgEl) {
+    svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.id = "svgCanvas";
+    svgEl.setAttribute("width", window.innerWidth);
+    svgEl.setAttribute("height", window.innerHeight);
+    svgEl.style.position = "fixed";
+    svgEl.style.top = "100";
+    svgEl.style.left = "0";
+    svgEl.style.pointerEvents = "none";
+    svgEl.style.zIndex = "1000";
+    document.body.appendChild(svgEl);
+}
+
+api.addEventListener('click', function(info) {
+    if (info.position3D) {
+        var x = parseFloat(info.position3D[0].toFixed(3));
+        var y = parseFloat(info.position3D[1].toFixed(3));
+        var z = parseFloat(info.position3D[2].toFixed(3));
+
+        var lineEl = document.getElementById("line");
+if (!lineEl) {
+    lineEl = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    lineEl.id = "line";
+    lineEl.setAttribute("stroke", "red"); // Cor vermelha
+    lineEl.setAttribute("stroke-width", "2"); // Espessura da linha
+    lineEl.style.top = "175";
+    lineEl.style.left = "000";
+    svgEl.appendChild(lineEl);
+}
+
+        if (oldX === null && oldY === null && oldZ === null) {
+            textoEl.innerHTML = "Primeiro clique registrado! Selecione outro ponto.";
+            oldX = x;
+            oldY = y;
+            oldZ = z;
+        } else {
+            // Calcula a distância entre os dois pontos
+            var deltaX = x - oldX;
+            var deltaY = y - oldY;
+            var deltaZ = z - oldZ;
+            var distancia = (Math.sqrt(deltaX ** 2 + deltaY ** 2 + deltaZ ** 2)).toFixed(3);
+
+            textoEl.innerHTML = "Distância calculada: " + distancia + " milímetros";
+
+           // Converte as coordenadas 3D para a área 2D do SVG
+           var scaleFactor = 10;
+           var startX = (oldX * scaleFactor + window.innerWidth) / 2;
+           var startY = (-oldZ * scaleFactor + window.innerHeight) / 2;
+           var endX = (x * scaleFactor + window.innerWidth) / 2;
+           var endY = (-z * scaleFactor + window.innerHeight) / 2;
+
+            // Atualiza a linha SVG para conectar os pontos
+            lineEl.setAttribute("x1", startX);
+            lineEl.setAttribute("y1", startY);
+            lineEl.setAttribute("x2", endX);
+            lineEl.setAttribute("y2", endY);
+            lineEl.setAttribute("visibility", "visible");
+        }
+
+        console.log("Clique em: X=" + x + ", Y=" + y + ", Z=" + z);
+    }
+}, { pick: 'fast' });
     });
+    
   });
 };
 
@@ -143,6 +275,13 @@ function generateFlatList() {
     line2.appendChild(createOpacitySlider(1.0, node.materialIndex));
     navTree.appendChild(li);
   });
+}
+
+
+
+function createText(text) {
+   var texto = document.createElement("text");
+   texto.className = "texto";
 }
 
 function createOpacitySlider(opacity, materialIndex) {
@@ -196,6 +335,37 @@ function createToggleButton(btnType, instance, name) {
   return btn;
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+  function createResetButton(btnType) {
+    const reset = document.createElement("button"); // Criando um botão válido
+    reset.className = btnType;
+    reset.id = "resetCoords";
+    reset.textContent = "Reset"; // Definindo o texto do botão
+    reset.dataset.isHidden = "false";
+
+    reset.style.position = "fixed"; // Garante que o botão esteja visível
+    reset.style.bottom = "20px";
+    reset.style.left = "20px";
+    reset.style.padding = "10px 20px";
+    reset.style.backgroundColor = "white";
+    reset.style.color = "black";
+    reset.style.border = "none";
+    reset.style.cursor = "pointer";
+    reset.style.zIndex = "1000"; // Garante que o botão fique acima de outros elementos
+
+    reset.addEventListener("click", function () {
+      oldX = null;
+      oldY = null;
+      oldZ = null;
+      console.log("Coordenadas resetadas!");
+    });
+
+    document.body.appendChild(reset); // Adiciona o botão ao body
+  }
+
+  createResetButton("meu-botao"); // Chama a função para exibir o botão
+});
+
 // Recursively traverse the node tree to identify non-parent nodes
 function recurse(nodeTree) {
   nodeTree.children.forEach((child) => {
@@ -212,3 +382,4 @@ function recurse(nodeTree) {
     }
   });
 }
+
