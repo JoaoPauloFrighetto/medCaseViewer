@@ -1,189 +1,72 @@
+// sliders.js
+function createOpacitySlider(initialValue, materialIndex) {
+    const slider = document.createElement("input");
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = "1";
+    slider.step = "0.01";
+    slider.value = initialValue;
+    slider.className = "opacity-slider";
+    slider.style.marginLeft = "10px";
+    slider.title = "Adjust Opacity";
 
-function createLaudoButton() {
-    let laudoBtn = document.getElementById("laudo");
-    if (!laudoBtn) {
-      laudoBtn = document.createElement("button");
-      laudoBtn.id = "laudo";
-      laudoBtn.className = "click";
-      laudoBtn.style.backgroundColor = "white";
-      laudoBtn.style.color = "black";
-      laudoBtn.style.zIndex = "1000";
-      laudoBtn.style.position = "fixed";
-      laudoBtn.style.top = "745px";
-      laudoBtn.style.right = "50px";
-      laudoBtn.textContent = "Laudo";
-      laudoBtn.style.zIndex = "11000";
-      document.body.appendChild(laudoBtn);
-    }
-    return laudoBtn;
   }
   
-  function createOptionsButton() {
-    let optionsBtn = document.getElementById("options");
-    if (!optionsBtn) {
-      optionsBtn = document.createElement("button");
-      optionsBtn.id = "options";
-      optionsBtn.className = "click";
-      optionsBtn.style.backgroundColor = "white";
-      optionsBtn.style.color = "black";
-      optionsBtn.style.zIndex = "1000";
-      optionsBtn.style.position = "fixed";
-      optionsBtn.style.top = "745px";
-      optionsBtn.style.right = "120px";
-      optionsBtn.textContent = "Opções";
-      optionsBtn.style.zIndex = "11000";
-      document.body.appendChild(optionsBtn);
-    }
-    return optionsBtn;
+  // Deixe a função visível globalmente se estiver usando um <script> tag
+  window.createOpacitySlider = createOpacitySlider;
+
+  function createToggleButton(btnType, instance, name) {
+    const btn = document.createElement("button");
+    btn.className = btnType;
+    btn.id = instance + "_" + name + "_toggle";
+    btn.value = instance;
+    btn.dataset.isHidden = "false";
+    btn.innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+    return btn;
   }
   
-  function toggleControls(show) {
-    document.getElementById("navTree").style.display = show ? "inline-block" : "none";
-    document.getElementById("subtitles").style.display = show ? "inline-block" : "none";
-  }
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    createLaudoButton();
-    createOptionsButton();
-  
-    const laudoBtn = document.getElementById("laudo");
-    const optionsBtn = document.getElementById("options");
-  
-    laudoBtn.addEventListener("click", function () {
-      console.log("Botão Laudo clicado!");
-      toggleControls(false);
-  
-      async function getModelInfo() {
-          const url = `https://api.sketchfab.com/v3/models/${uid}`;
-          
-          try {
-              const response = await fetch(url, {
-                  headers: {
-                      'Authorization': `Token ${API_TOKEN}`
-                  }
-              });
-  
-              if (!response.ok) {
-                  throw new Error(`Erro: ${response.status} ${response.statusText}`);
+
+function addToggleButton(){
+    var toggleButtons = document.getElementsByClassName("Toggle");
+        for (let i = 0; i < toggleButtons.length; i++) {
+          toggleButtons[i].addEventListener("click", function () {
+            if (this.dataset.isHidden === "false") {
+              api.hide(this.value);
+              this.dataset.isHidden = "true";
+              this.innerHTML = `<img src="eye_off_icon.svg" width="24" alt="Show" />`;
+            } else {
+              api.show(this.value);
+              this.dataset.isHidden = "false";
+              this.innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+              const parentEl = document.getElementById(this.value);
+              if (parentEl) {
+                const childToggles = parentEl.getElementsByClassName("Toggle");
+                for (let j = 0; j < childToggles.length; j++) {
+                  api.show(childToggles[j].value);
+                  childToggles[j].dataset.isHidden = "false";
+                  childToggles[
+                    j
+                  ].innerHTML = `<img src="eye_icon.svg" width="24" alt="Hide" />`;
+                }
               }
-  
-              const data = await response.json();
-              
-              // Exibir a descrição no elemento "mensagem"
-              const mensagemEl = document.getElementById("mensagem");
-              if (mensagemEl) {
-                  mensagemEl.style.display = "inline-block";
-                  mensagemEl.innerHTML = `<p>${data.description}</p>`;
-              } else {
-                  console.error("Elemento 'mensagem' não encontrado!");
-              }
-          } catch (error) {
-              console.error(error);
-          }
-      }
-  
-      // Chamar a função para obter a descrição do modelo
-      getModelInfo();
-  });
-  
-    optionsBtn.addEventListener("click", function () {
-      console.log("Botão Opções clicado!");
-      toggleControls(true);
-      document.getElementById("mensagem").style.display = "none";
+            }
+          });
+        }
+}
+
+function createOpacitySlider(opacity, materialIndex) {
+    // function createOpacitySlider(opacity, materialIndex) {
+    const slider = document.createElement("input");
+    slider.className = "opacitySlider";
+    slider.type = "range";
+    slider.min = "0";
+    slider.max = "1";
+    slider.step = "0.01";
+    slider.value = opacity.toString();
+    slider.addEventListener("input", function () {
+      setOpacityForMaterial(materialIndex, parseFloat(this.value));
     });
-  });
-  
-  
-  function createLaudoButton() {
-    let laudoBtn = document.getElementById("laudo");
-    if (!laudoBtn) {
-      laudoBtn = document.createElement("button");
-      laudoBtn.id = "laudo";
-      laudoBtn.className = "laudo-button";
-      laudoBtn.style.backgroundColor = "#eaeaea";
-      laudoBtn.style.color = "black";
-      laudoBtn.style.zIndex = "1000";
-      laudoBtn.style.position = "fixed";
-      laudoBtn.style.top = "0px";
-      laudoBtn.style.right = "50px";
-      laudoBtn.textContent = "Laudo";
-      laudoBtn.style.zIndex = "11000";
-      document.body.appendChild(laudoBtn);
-    }
-    return laudoBtn;
+    return slider;
   }
-  
-  function createOptionsButton() {
-    let optionsBtn = document.getElementById("options");
-    if (!optionsBtn) {
-      optionsBtn = document.createElement("button");
-      optionsBtn.id = "options";
-      optionsBtn.className = "options-button";
-      optionsBtn.style.backgroundColor = "#eaeaea";
-      optionsBtn.style.color = "black";
-      optionsBtn.style.zIndex = "1000";
-      optionsBtn.style.position = "fixed";
-      optionsBtn.style.top = "0px";
-      optionsBtn.style.right = "120px";
-      optionsBtn.textContent = "Opções";
-      optionsBtn.style.zIndex = "11000";
-      document.body.appendChild(optionsBtn);
-    }
-    return optionsBtn;
-  }
-  
-  function toggleControls(show) {
-    document.getElementById("navTree").style.display = show ? "inline-block" : "none";
-    document.getElementById("subtitles").style.display = show ? "inline-block" : "none";
-  }
-  
-  document.addEventListener("DOMContentLoaded", function () {
-    createLaudoButton();
-    createOptionsButton();
-  
-    const laudoBtn = document.getElementById("laudo");
-    const optionsBtn = document.getElementById("options");
-  
-    laudoBtn.addEventListener("click", function () {
-      console.log("Botão Laudo clicado!");
-      toggleControls(false);
-  
-      async function getModelInfo() {
-          const url = `https://api.sketchfab.com/v3/models/${MODEL_UID}`;
-          
-          try {
-              const response = await fetch(url, {
-                  headers: {
-                      'Authorization': `Token ${API_TOKEN}`
-                  }
-              });
-  
-              if (!response.ok) {
-                  throw new Error(`Erro: ${response.status} ${response.statusText}`);
-              }
-  
-              const data = await response.json();
-              
-              // Exibir a descrição no elemento "mensagem"
-              const mensagemEl = document.getElementById("mensagem");
-              if (mensagemEl) {
-                  mensagemEl.style.display = "inline-block";
-                  mensagemEl.innerHTML = `<p>${data.description}</p>`;
-              } else {
-                  console.error("Elemento 'mensagem' não encontrado!");
-              }
-          } catch (error) {
-              console.error(error);
-          }
-      }
-  
-      // Chamar a função para obter a descrição do modelo
-      getModelInfo();
-  });
-  
-    optionsBtn.addEventListener("click", function () {
-      console.log("Botão Opções clicado!");
-      toggleControls(true);
-      document.getElementById("mensagem").style.display = "none";
-    });
-  });
+
+  // Set opacity for a specific material
