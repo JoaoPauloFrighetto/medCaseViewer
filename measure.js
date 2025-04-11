@@ -97,6 +97,9 @@ newMeasure.addEventListener("click", function () {
 
     const resetBtn = document.getElementById("resetCoords");
     if (resetBtn) resetBtn.remove();
+    if (typeof cameraCheckInterval !== "undefined") {
+      clearInterval(cameraCheckInterval);
+    }
   }
 });
 
@@ -116,8 +119,6 @@ function setupClickEventHandler() {
     if (measureModal) {
       measureModal.innerHTML = "Clique para selecionar o primeiro ponto.";
     }
-
-    console.log("Coordenadas resetadas!");
   });
 
   api.addEventListener(
@@ -198,7 +199,45 @@ function setupClickEventHandler() {
 
         console.log("Clique em: X=" + x + ", Y=" + y + ", Z=" + z);
       }
+      let lastCameraPosition = null;
+      let cameraCheckInterval = null;
+    
+      function startCameraMonitor() {
+        api.getCameraLookAt(function(err, camera) {
+          if (!err) {
+            lastCameraPosition = JSON.stringify(camera);
+          }
+        });
+    
+        cameraCheckInterval = setInterval(() => {
+          api.getCameraLookAt(function(err, camera) {
+            if (err || !lastCameraPosition) return;
+    
+            const currentPos = JSON.stringify(camera);
+            if (currentPos !== lastCameraPosition) {
+              console.log("Câmera foi movida!");
+    
+              const lineEl = document.getElementById("line");
+              if (lineEl) lineEl.remove();
+    
+              const measureModal = document.getElementById("texto");
+              if (measureModal) {
+                measureModal.innerHTML = "A câmera foi movida! Comece a medição novamente.";
+              }
+    
+              oldX = null;
+              oldY = null;
+              oldZ = null;
+    
+              lastCameraPosition = currentPos; // atualiza posição para não repetir
+            }
+          });
+        }, 500); // verifica a cada 0.5 segundos
+      }
+    
+      startCameraMonitor();
     },
     { pick: "fast" }
   );
 }
+
