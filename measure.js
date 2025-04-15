@@ -23,10 +23,18 @@ newMeasure.addEventListener("click", function () {
       measureModal = document.createElement("p");
       measureModal.id = "texto";
       measureModal.style.position = "fixed";
-      measureModal.style.top = "20px";
-      measureModal.style.left = "250px";
+      if(isMobileDevice()){
+        measureModal.style.top = "80px"
+        measureModal.width = "auto";
+      }
+      else{
+        measureModal.style.top = "20px";
+        measureModal.style.left = "250px";
+      }
       measureModal.style.backgroundColor = "white";
       measureModal.style.padding = "10px";
+      measureModal.style.opacity = "70%";
+      measureModal.style.borderRadius = "24px";
       measureModal.style.fontSize = isMobileDevice() ? "16px" : "14px";
       measureModal.style.zIndex = "1000";
       document.body.appendChild(measureModal);
